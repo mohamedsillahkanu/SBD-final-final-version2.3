@@ -26,6 +26,7 @@ const state = {
     currentUser:    null,
     isAdmin:        false
 };
+window.state = state;   // expose for ai_agent.js to read submittedSchools / pendingSubmissions
 
 var ALL_LOCATION_DATA = {};
 var USER_MAP      = {};
