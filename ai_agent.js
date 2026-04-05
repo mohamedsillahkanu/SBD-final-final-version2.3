@@ -276,7 +276,7 @@
     }
 
     // Build targets from the already-loaded CSV cascading data.
-    // ALL_LOCATION_DATA structure: { district: { chiefdom: { section: { phu: { community: [schools] } } } } }
+    // ALL_LOCATION_DATA structure: { district: { chiefdom: { phu: { community: [schools] } } } }
     // Counts: district target = all schools in that district
     //         chiefdom target = all schools in that chiefdom
     //         phu target      = all schools under that phu
@@ -286,22 +286,17 @@
 
         for (const district in data) {
             const dKey = district.trim().toLowerCase();
-
             for (const chiefdom in data[district]) {
                 const cKey = dKey + '|' + chiefdom.trim().toLowerCase();
-
-                for (const section in data[district][chiefdom]) {
-                    for (const phu in data[district][chiefdom][section]) {
-                        const pKey = cKey + '|' + phu.trim().toLowerCase();
-
-                        for (const community in data[district][chiefdom][section][phu]) {
-                            const schools = data[district][chiefdom][section][phu][community];
-                            const n = Array.isArray(schools) ? schools.length : 0;
-                            if (n === 0) continue;
-                            targets[dKey]  = (targets[dKey]  || 0) + n;
-                            targets[cKey]  = (targets[cKey]  || 0) + n;
-                            targets[pKey]  = (targets[pKey]  || 0) + n;
-                        }
+                for (const phu in data[district][chiefdom]) {
+                    const pKey = cKey + '|' + phu.trim().toLowerCase();
+                    for (const community in data[district][chiefdom][phu]) {
+                        const schools = data[district][chiefdom][phu][community];
+                        const n = Array.isArray(schools) ? schools.length : 0;
+                        if (n === 0) continue;
+                        targets[dKey]  = (targets[dKey]  || 0) + n;
+                        targets[cKey]  = (targets[cKey]  || 0) + n;
+                        targets[pKey]  = (targets[pKey]  || 0) + n;
                     }
                 }
             }
@@ -348,7 +343,7 @@
         const loc=getLoc();
         const d=()=>document.getElementById('af_district')?.value||'';
         const c=()=>document.getElementById('af_chiefdom')?.value||'';
-        const s=()=>document.getElementById('af_section')?.value||'';
+        const s=()=>'';
         const f=()=>document.getElementById('af_facility')?.value||'';
         const co=()=>document.getElementById('af_community')?.value||'';
 
@@ -358,11 +353,11 @@
             resetBelow('af_chiefdom','af_section','af_facility','af_community','af_school');
             if(d()&&loc[d()])afOpt('af_chiefdom',Object.keys(loc[d()]),false);
         }else if(level==='chiefdom'){
-            resetBelow('af_section','af_facility','af_community','af_school');
-            if(d()&&c()&&loc[d()]?.[c()])afOpt('af_section',Object.keys(loc[d()][c()]),false);
+            resetBelow('af_facility','af_community','af_school');
+            if(d()&&c()&&loc[d()]?.[c()])afOpt('af_facility',Object.keys(loc[d()][c()]),false);
         }else if(level==='section'){
             resetBelow('af_facility','af_community','af_school');
-            if(d()&&c()&&s()&&loc[d()]?.[c()]?.[s()])afOpt('af_facility',Object.keys(loc[d()][c()][s()]),false);
+
         }else if(level==='facility'){
             resetBelow('af_community','af_school');
             if(d()&&c()&&s()&&f()&&loc[d()]?.[c()]?.[s()]?.[f()])afOpt('af_community',Object.keys(loc[d()][c()][s()][f()]),false);
@@ -664,26 +659,22 @@
     //  TARGETS TAB — District → Chiefdom → Schools breakdown
     // ════════════════════════════════════════════════════════
     function buildTargetsTree() {
-        // Returns tree: { district: { chiefdoms: { chiefdom: { schools: [name,...], enrollment } } } }
-        const data   = window.ALL_LOCATION_DATA || {};
-        const tree   = {};
+        // Returns tree: { district: { chiefdoms: { chiefdom: { schools: [name,...] } } } }
+        const data = window.ALL_LOCATION_DATA || {};
+        const tree = {};
 
         for (const district in data) {
             if (!tree[district]) tree[district] = { chiefdoms: {} };
             for (const chiefdom in data[district]) {
                 if (!tree[district].chiefdoms[chiefdom])
                     tree[district].chiefdoms[chiefdom] = { schools: new Set() };
-
-                for (const section in data[district][chiefdom]) {
-                    for (const phu in data[district][chiefdom][section]) {
-                        for (const community in data[district][chiefdom][section][phu]) {
-                            const schools = data[district][chiefdom][section][phu][community];
-                            if (Array.isArray(schools))
-                                schools.forEach(s => tree[district].chiefdoms[chiefdom].schools.add(s));
-                        }
+                for (const phu in data[district][chiefdom]) {
+                    for (const community in data[district][chiefdom][phu]) {
+                        const schools = data[district][chiefdom][phu][community];
+                        if (Array.isArray(schools))
+                            schools.forEach(s => tree[district].chiefdoms[chiefdom].schools.add(s));
                     }
                 }
-                // Convert Set to sorted Array
                 tree[district].chiefdoms[chiefdom].schools =
                     [...tree[district].chiefdoms[chiefdom].schools].sort();
             }
