@@ -1102,6 +1102,7 @@ function validateCurrentSection() {
     let isValid = true, firstInvalid = null;
     section.querySelectorAll('input[required], select[required]').forEach(field => {
         if (field.type === 'hidden') return;
+        if (field.disabled) return;   // skip disabled fields (e.g. section_loc)
         if (!field.value || field.value.trim() === '') {
             isValid = false; field.classList.add('error');
             document.getElementById('error_'+field.id)?.classList.add('show');
