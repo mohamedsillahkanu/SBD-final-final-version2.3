@@ -275,7 +275,7 @@
             <button class="btn-teal" onclick="switchCamera()">🔄 Switch</button>
             <button class="btn-gold" onclick="capturePhoto()">📸 Capture</button>
             <button class="btn-outline" onclick="closeCamera()">Cancel</button>
-        </div>  
+        </div>
     </div>
 </div>
 <div class="notif" id="notif"></div>
@@ -283,7 +283,7 @@
 <script>
 var GAS_URL = "https://script.google.com/macros/s/AKfycbwZoVy_5LQNFuaTb0N_69CF9fc40usq6zhdWCQQorhKPAc7yEov4oo2C_DIF4JlbLwQ/exec";
 var NMCP_LOGO = 'NMCP.png';
-var CASCADE_CSV = 'dms_cascading.csv';
+var CASCADE_CSV = 'cascading_data.csv';
 var CASCADE_ROLES = ['PHU Staff', 'Teacher'];
 
 var uploadedPhoto = null;
@@ -437,7 +437,10 @@ function capturePhoto() {
 
 /* ── QR ── */
 function buildQRData(d) {
-    return 'Name: '+d.name+'\nID: '+d.idNum+'\nRole: '+d.role+'\nDistrict: '+d.district+'\nTel: '+d.tel;
+    var qr = 'Name: '+d.name+'\nID: '+d.idNum+'\nRole: '+d.role+'\nDistrict: '+d.district+'\nTel: '+d.tel;
+    if (d.chiefdom) qr += '\nChiefdom: '+d.chiefdom;
+    if (d.facility) qr += '\nFacility: '+d.facility;
+    return qr;
 }
 function renderQR(container, text) {
     container.innerHTML='';
