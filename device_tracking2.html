@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -509,6 +509,14 @@ function onScanResult(decoded, mode) {
         facility: parsed.facility || '',
         year:     parsed.year     || new Date().getFullYear().toString()
     };
+
+    // Block if chiefdom or facility missing
+    if (!data.chiefdom || !data.facility) {
+        showMessage(mode, 'error', 'INCOMPLETE TAG',
+            'This device tag is missing Chiefdom or Health Facility. Please regenerate the tag from the Device Tag app using your updated SBD ID card.',
+            'Code: ' + (data.code || '—'));
+        return;
+    }
 
     if (mode === 'register') handleRegister(data);
     else handleReturn(data);
