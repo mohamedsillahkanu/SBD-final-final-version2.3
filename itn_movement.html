@@ -700,11 +700,20 @@ function stopLoginScanner() {
 }
 
 function doLogout() {
-  stopLoginScanner(); stopDriverScanner();
-  currentUser=null; form={};
+  try { stopLoginScanner(); } catch(e) {}
+  try { stopDriverScanner(); } catch(e) {}
+  currentUser = null;
+  form = {};
+  // Reset form steps safely
+  try { setStep(1); } catch(e) {}
+  try { switchTab('dashboard'); } catch(e) {}
+  // Hide receipt if shown
+  var rec = document.getElementById('step-receipt');
+  if (rec) rec.style.display = 'none';
+  // Switch screens
   document.getElementById('loginErr').classList.remove('show');
   document.getElementById('scr-app').classList.remove('active');
-  document.getElementById('mainTabBar').style.display='none';
+  document.getElementById('mainTabBar').style.display = 'none';
   document.getElementById('scr-login').classList.add('active');
 }
 
