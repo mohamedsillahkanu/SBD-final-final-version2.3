@@ -913,10 +913,6 @@
                 <div style="font-size:10px;margin-top:4px;">${newSubmitted} submitted · ${newPct}%</div>
             </div>
     
-            <div class="tg-kpi g">
-                <div class="tg-kv">${natSubmitted.toLocaleString()}</div>
-                <div class="tg-kl">Submitted</div>
-            </div>
             <div class="tg-kpi ${natPct>=80?'g':natPct>=50?'o':'r'}">
                 <div class="tg-kv">${natPct}%</div>
                 <div class="tg-kl">Progress</div>
